@@ -1,10 +1,11 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+from tkinter import filedialog
 import pymysql
 
 window = Tk()
-window.geometry("1000x600")
+window.geometry("900x600")
 window.title("Billing")
 
 #===========field listner ==========================
@@ -153,16 +154,31 @@ def getItemLists():
 def print_bill():
     global itemLists
     global totalCost
-    
-    print("=====================Receipt==========================\n")
-    print("======================================================")
-    print("{:<20}{:<10}{:<15}{:<10}".format("Name", "Rate", "Quantity", "Cost"))
-    print("======================================================")
-    for item in itemLists:
-        print("{:<20}{:<10}{:<15}{:<10}".format(item["name"],item["rate"],item["quantity"],item["cost"]))
 
-    print("======================================================")
-    print("{:<20}{:<10}{:<15}{:<10}".format("Total Cost"," "," ",totalCost))
+    billString = ""
+    billString+="=====================Receipt==========================\n\n"
+    billString+="======================================================\n"
+    billString+="{:<20}{:<10}{:<15}{:<10}\ns".format("Name", "Rate", "Quantity", "Cost")
+    billString+="======================================================\n"
+    
+   
+
+    
+    for item in itemLists:
+        billString+="{:<20}{:<10}{:<15}{:<10}\n".format(item["name"],item["rate"],item["quantity"],item["cost"])
+
+    billString+="======================================================\n"
+    billString+="{:<20}{:<10}{:<15}{:<10}\n".format("Total Cost"," "," ",totalCost)
+
+    billFile = filedialog.asksaveasfile(mode='w',defaultextension=".txt")
+    if billFile is None:
+        messagebox.showerror("Invalid file Name", "Please enter valid name")
+    else:
+        billFile.write(billString)
+        billFile.close()
+        
+    print(billString)
+    
 
     itemLists =[]
     totalCost=0.0
@@ -479,10 +495,15 @@ def updateItemWindow():
     updateTV.configure(yscrollcommand=scrollBar.set)
 
     updateTV.heading('#0',text="Item ID")
+    updateTV.column('#0', minwidth=0, width=150)
     updateTV.heading('#1',text="Item Name")
+    updateTV.column('#1', minwidth=0, width=170)
     updateTV.heading('#2',text="Rate")
+    updateTV.column('#2', minwidth=0, width=150)
     updateTV.heading('#3',text="Type")
+    updateTV.column('#3', minwidth=0, width=150)
     updateTV.heading('#4',text="Store Type")
+    updateTV.column('#4', minwidth=0, width=150)
     getItemLists()
     
 def viewAllBills():
